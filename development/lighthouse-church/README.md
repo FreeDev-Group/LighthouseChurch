@@ -12,6 +12,14 @@ Standalone Full Site Editing block theme for the LightHouse Church Bujumbura web
 
 Features that set the 6.6 minimum: `theme.json` version 3, section styles in `styles/sections/`, `defaultSpacingSizes`.
 
+## Checks
+
+```bash
+development/check-theme.sh
+```
+
+Runs PHP syntax, JSON validity, theme header and ZIP build checks. The same script runs in the "Theme checks" GitHub workflow (`.github/workflows/theme-checks.yml`) on PHP 7.4 and 8.3. The full test plan, including the manual tests that need a complete WordPress installation, is in `Doc/theme-testing.md`.
+
 ## Build and install
 
 ```bash

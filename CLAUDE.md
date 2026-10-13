@@ -60,6 +60,7 @@ Task ownership is assigned through GitHub Issues.
 - All theme code lives in `development/lighthouse-church/`. It has no parent theme. Global design settings belong in `theme.json` so they stay editable in the Site Editor.
 - Keep website-facing text in patterns in French. Demo text must be clearly marked as such, and patterns must never contain invented testimonials, statistics or contact details.
 - Build the installable ZIP with `development/build-theme-zip.sh`. ZIPs are build output and are not committed.
+- Run `development/check-theme.sh` before committing theme changes. The test plan and the manual tests still required are in `Doc/theme-testing.md`.
 - **No page builders** without explicit coordinator approval.
 - **No plugins** until they have been evaluated and approved (record the outcome in `Doc/decisions.md`).
 - Write accessible, responsive and maintainable code:

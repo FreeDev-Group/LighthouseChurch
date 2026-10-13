@@ -1,0 +1,60 @@
+# Static checks for the lighthouse-church theme.
+# Runs development/check-theme.sh: PHP syntax, JSON validity, theme headers
+# and the installable ZIP build. It never deploys anything.
+
+name: Theme checks
+
+on:
+  pull_request:
+    paths:
+      - "development/**"
+      - ".github/workflows/theme-checks.yml"
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - "development/**"
+      - ".github/workflows/theme-checks.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: theme-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Theme checks (PHP ${{ matrix.php }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        # 7.4 is the minimum declared in style.css (provisional, P-012);
+        # 8.3 is a current PHP release.
+        php: ["7.4", "8.3"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: none
+
+      - name: Run theme checks
+        run: bash development/check-theme.sh
+
+      - name: Upload theme ZIP
+        if: success() && matrix.php == '8.3'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-church-theme
+          path: dist/lighthouse-church-*.zip
+          if-no-files-found: error
+          retention-days: 14
