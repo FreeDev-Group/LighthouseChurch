@@ -5,7 +5,7 @@ These rules apply to every Claude Code conversation in this repository. The team
 ## 1. Project identity and scope
 
 - **Project and church name:** LightHouse Church Bujumbura. Maintained by the FreeDEV team.
-- **CMS:** WordPress. Parent theme Twenty Twenty-Five (`twentytwentyfive`), custom child theme `lighthouse-child`, planned at `development/lighthouse-child/`.
+- **CMS:** WordPress, with a standalone Full Site Editing block theme **LightHouse Church** (slug `lighthouse-church`) at `development/lighthouse-church/` (see `Doc/decisions.md`: D-014 is confirmed; D-015 to D-017 and the minimum WordPress/PHP versions are provisional).
 - **Hosting:** a single WordPress production environment on Hostinger. Development, testing and deployment take place in this environment. Separate DEV and STAGING environments will not be used (see `Doc/decisions.md`, D-009). Follow §10 for every change.
 - **Key documents:**
   - `README.md` — project overview and workflow
@@ -34,7 +34,7 @@ Task ownership is assigned through GitHub Issues.
 
 ## 4. Decisions and conflicts
 
-- Only entries marked **Confirmed** in `Doc/decisions.md` are approved. Your own suggestions are proposals, never decisions.
+- Only entries marked **Confirmed** in `Doc/decisions.md` are approved. **Provisional** entries are working directions that may still change; respect their stated conditions. Your own suggestions are proposals, never decisions, and you must never mark an entry Confirmed without the coordinator's explicit approval.
 - Do not change the approved website structure or navigation without approval.
 - When documents conflict (for example the requirements PDF vs. the README vs. the navigation document), **name the conflict and ask the coordinator**. Do not silently pick a version.
 - If information is missing, document the question rather than inventing an answer.
@@ -57,7 +57,9 @@ Task ownership is assigned through GitHub Issues.
 
 - Use Full Site Editing: block templates (`templates/`), template parts (`parts/`), block patterns (`patterns/`), with global styles and settings in `theme.json`.
 - Prefer native WordPress blocks. Keep custom CSS minimal and custom PHP small and documented.
-- Never modify the parent theme. All customization goes in `lighthouse-child`.
+- All theme code lives in `development/lighthouse-church/`. It has no parent theme. Global design settings belong in `theme.json` so they stay editable in the Site Editor.
+- Keep website-facing text in patterns in French. Demo text must be clearly marked as such, and patterns must never contain invented testimonials, statistics or contact details.
+- Build the installable ZIP with `development/build-theme-zip.sh`. ZIPs are build output and are not committed.
 - **No page builders** without explicit coordinator approval.
 - **No plugins** until they have been evaluated and approved (record the outcome in `Doc/decisions.md`).
 - Write accessible, responsive and maintainable code:
