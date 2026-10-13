@@ -9,7 +9,7 @@
 			"background": "var:preset|color|white",
 			"text": "var:preset|color|contrast"
 		},
-		"border": { "radius": "16px", "width": "1px", "style": "solid", "color": "#E6DED1" },
+		"border": { "radius": "16px", "width": "1px", "style": "solid", "color": "var:preset|color|line" },
 		"shadow": "var:preset|shadow|soft",
 		"spacing": {
 			"padding": {

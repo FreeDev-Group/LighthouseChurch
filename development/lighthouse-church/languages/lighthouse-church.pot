@@ -1,0 +1,125 @@
+# Copyright (C) FreeDEV
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: LightHouse Church 0.1.0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: lighthouse-church\n"
+
+#: functions.php:44
+msgid "LightHouse: Sections"
+msgstr ""
+
+#: functions.php:48
+msgid "LightHouse: Cards"
+msgstr ""
+
+#: functions.php:52
+msgid "LightHouse: Calls to action"
+msgstr ""
+
+#: functions.php:56
+msgid "LightHouse: Full pages"
+msgstr ""
+
+#: functions.php:69
+msgid "Beam"
+msgstr ""
+
+#: functions.php:76 functions.php:83
+msgid "Eyebrow"
+msgstr ""
+
+#: patterns/404-content.php:13
+msgid "Erreur 404"
+msgstr ""
+
+#: patterns/404-content.php:17
+msgid "Cette page est introuvable"
+msgstr ""
+
+#: patterns/404-content.php:21
+msgid "La page que vous cherchez a peut-être été déplacée ou supprimée. Essayez une recherche ou revenez à l’accueil."
+msgstr ""
+
+#: patterns/404-content.php:24 patterns/404-content.php:24 patterns/no-results.php:20 patterns/no-results.php:20 patterns/search-form.php:10 patterns/search-form.php:10
+msgid "Rechercher"
+msgstr ""
+
+#: patterns/404-content.php:24 patterns/no-results.php:20 patterns/search-form.php:10
+msgid "Rechercher sur le site…"
+msgstr ""
+
+#: patterns/404-content.php:29
+msgid "Retour à l’accueil"
+msgstr ""
+
+#: patterns/blog-heading.php:12
+msgctxt "Posts page heading"
+msgid "Actualités"
+msgstr ""
+
+#: patterns/footer.php:21
+msgid "« Une Église au service de la ville de Bujumbura pour la gloire de Dieu »"
+msgstr ""
+
+#: patterns/footer.php:41
+msgctxt "Footer heading"
+msgid "Navigation"
+msgstr ""
+
+#: patterns/footer.php:44
+msgid "Menu du pied de page"
+msgstr ""
+
+#: patterns/footer.php:51
+msgctxt "Footer heading"
+msgid "Nous trouver"
+msgstr ""
+
+#: patterns/footer.php:55
+msgid "Adresse :"
+msgstr ""
+
+#: patterns/footer.php:55
+msgid "E-mail :"
+msgstr ""
+
+#: patterns/footer.php:55
+msgid "Téléphone / WhatsApp :"
+msgstr ""
+
+#: patterns/footer.php:59
+msgid "Horaires des cultes :"
+msgstr ""
+
+#: patterns/footer.php:77
+msgid "Affiliée à REACH-SA"
+msgstr ""
+
+#: patterns/header.php:26
+msgid "Menu principal"
+msgstr ""
+
+#: patterns/header.php:31
+msgctxt "Header call-to-action button"
+msgid "Donner"
+msgstr ""
+
+#: patterns/no-results.php:13
+msgid "Aucun résultat"
+msgstr ""
+
+#: patterns/no-results.php:17
+msgid "Aucun contenu ne correspond pour le moment. Essayez une autre recherche."
+msgstr ""
+
+#: patterns/post-navigation.php:16
+msgid "Article précédent :"
+msgstr ""
+
+#: patterns/post-navigation.php:18
+msgid "Article suivant :"
+msgstr ""

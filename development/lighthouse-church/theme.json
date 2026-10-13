@@ -18,7 +18,8 @@
 				{ "slug": "primary-2", "color": "#1C3A57", "name": "Deep sea" },
 				{ "slug": "accent", "color": "#E0A23A", "name": "Amber" },
 				{ "slug": "accent-2", "color": "#8A5A12", "name": "Dark amber" },
-				{ "slug": "mist", "color": "#C9D3DE", "name": "Mist" }
+				{ "slug": "mist", "color": "#C9D3DE", "name": "Mist" },
+				{ "slug": "line", "color": "#E6DED1", "name": "Line" }
 			],
 			"gradients": [
 				{
@@ -260,7 +261,7 @@
 				"typography": { "fontFamily": "var:preset|font-family|heading", "fontStyle": "italic" }
 			},
 			"core/separator": {
-				"color": { "text": "var:preset|color|mist" }
+				"color": { "text": "var:preset|color|line" }
 			},
 			"core/image": {
 				"border": { "radius": "12px" }

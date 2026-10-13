@@ -47,21 +47,24 @@
 	margin-block-start: 0;
 }
 
-/* Visible keyboard focus on every interactive element (WCAG 2.4.7 / 2.4.11). */
+/*
+ * Visible keyboard focus (WCAG 2.4.7) with at least 3:1 contrast (WCAG 1.4.11):
+ * night blue on light surfaces (14.5:1 on cream), amber on dark surfaces
+ * (6.9:1 on night blue).
+ */
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-	outline: 3px solid var(--wp--preset--color--accent);
+	outline: 3px solid var(--wp--preset--color--primary);
 	outline-offset: 2px;
 	border-radius: 2px;
 }
 
 :where(.wp-element-button, .wp-block-button__link):focus-visible {
-	outline: 3px solid var(--wp--preset--color--accent);
+	outline: 3px solid var(--wp--preset--color--primary);
 	outline-offset: 3px;
 }
 
-/* On amber surfaces the accent outline would disappear: use night blue. */
-:where(.has-accent-background-color) :focus-visible {
-	outline-color: var(--wp--preset--color--primary);
+:where(.is-style-section-night, .has-primary-background-color:not(.wp-block-navigation__responsive-container), .has-primary-2-background-color:not(.wp-block-navigation__responsive-container), .wp-block-navigation__responsive-container.is-menu-open) :focus-visible {
+	outline-color: var(--wp--preset--color--accent);
 }
 
 /* Minimum target size for navigation links (WCAG 2.5.8). */
@@ -118,4 +121,21 @@
 /* Keep short header call-to-action labels on one line on small screens. */
 .wp-block-template-part .wp-block-button__link {
 	white-space: nowrap;
+}
+
+/*
+ * Outline buttons inside night sections. WordPress 6.6 does not apply block
+ * style variations nested inside a section style, so the light text color is
+ * set here.
+ */
+.is-style-section-night .wp-block-button.is-style-outline > .wp-block-button__link:not(:hover) {
+	background-color: transparent;
+	border-color: currentColor;
+	color: var(--wp--preset--color--base);
+}
+
+.is-style-section-night .wp-block-button.is-style-outline > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--base);
+	border-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--primary);
 }

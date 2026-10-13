@@ -24,6 +24,7 @@ wp-config-local.php
 /backups/
 # Generated theme/plugin installation ZIPs (build them from source instead)
 *.zip
+/dist/
 
 # --- WordPress runtime-generated files (if a WordPress install is ever placed here) ---
 wp-content/uploads/

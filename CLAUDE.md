@@ -5,7 +5,7 @@ These rules apply to every Claude Code conversation in this repository. The team
 ## 1. Project identity and scope
 
 - **Project and church name:** LightHouse Church Bujumbura. Maintained by the FreeDEV team.
-- **CMS:** WordPress, with a standalone Full Site Editing block theme **LightHouse Church** (slug `lighthouse-church`) at `development/lighthouse-church/` (see `Doc/decisions.md`: D-014 is confirmed; D-015 to D-017 and the minimum WordPress/PHP versions are provisional).
+- **CMS:** WordPress, with a standalone Full Site Editing block theme **LightHouse Church** (slug `lighthouse-church`) at `development/lighthouse-church/` (see `Doc/decisions.md`: D-014 and D-016 are confirmed; D-015, D-017 and the minimum WordPress/PHP versions are provisional).
 - **Hosting:** a single WordPress production environment on Hostinger. Development, testing and deployment take place in this environment. Separate DEV and STAGING environments will not be used (see `Doc/decisions.md`, D-009). Follow §10 for every change.
 - **Key documents:**
   - `README.md` — project overview and workflow
