@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+	<title id="title">LightHouse Church</title>
+	<path d="M38 14 L62 6 L62 22 Z" fill="#E0A23A" opacity="0.55"/>
+	<path d="M26 14 L2 6 L2 22 Z" fill="#E0A23A" opacity="0.35"/>
+	<path d="M27 10 h10 v4 h-10 z" fill="#12263A"/>
+	<circle cx="32" cy="16.5" r="3.5" fill="#E0A23A"/>
+	<path d="M28 20 h8 l3 34 h-14 z" fill="#12263A"/>
+	<path d="M27.4 30 h9.2 l0.5 5 h-10.2 z M26.5 41 h11 l0.5 5 h-12 z" fill="#FBF8F2"/>
+	<path d="M20 54 h24 a2 2 0 0 1 2 2 v2 h-28 v-2 a2 2 0 0 1 2 -2 z" fill="#12263A"/>
+</svg>

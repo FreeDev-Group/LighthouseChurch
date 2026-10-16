@@ -1,0 +1,141 @@
+/*
+ * LightHouse Church — rules that theme.json cannot express.
+ * Keep this file small; prefer theme.json for any design setting.
+ */
+
+/* Text for screen readers only (required by WordPress for all themes). */
+.screen-reader-text {
+	border: 0;
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute !important;
+	width: 1px;
+	word-wrap: normal !important;
+}
+
+.screen-reader-text:focus {
+	background-color: var(--wp--preset--color--base);
+	clip-path: none;
+	color: var(--wp--preset--color--primary);
+	display: block;
+	font-size: 1rem;
+	height: auto;
+	left: 5px;
+	padding: 15px 23px 14px;
+	text-decoration: none;
+	top: 5px;
+	width: auto;
+	z-index: 100000;
+}
+
+/* Header, main and footer sit flush; the footer stays at the bottom on short pages. */
+.wp-site-blocks {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.wp-site-blocks > main {
+	flex-grow: 1;
+}
+
+.wp-site-blocks > main,
+.wp-site-blocks > footer {
+	margin-block-start: 0;
+}
+
+/*
+ * Visible keyboard focus (WCAG 2.4.7) with at least 3:1 contrast (WCAG 1.4.11):
+ * night blue on light surfaces (14.5:1 on cream), amber on dark surfaces
+ * (6.9:1 on night blue).
+ */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+	outline: 3px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+
+:where(.wp-element-button, .wp-block-button__link):focus-visible {
+	outline: 3px solid var(--wp--preset--color--primary);
+	outline-offset: 3px;
+}
+
+:where(.is-style-section-night, .has-primary-background-color:not(.wp-block-navigation__responsive-container), .has-primary-2-background-color:not(.wp-block-navigation__responsive-container), .wp-block-navigation__responsive-container.is-menu-open) :focus-visible {
+	outline-color: var(--wp--preset--color--accent);
+}
+
+/* Minimum target size for navigation links (WCAG 2.5.8). */
+.wp-block-navigation .wp-block-navigation-item__content {
+	min-height: 24px;
+	display: inline-flex;
+	align-items: center;
+}
+
+/* Eyebrow: a short label above a section heading. */
+.is-style-eyebrow {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--accent-2);
+}
+
+.is-style-section-night .is-style-eyebrow,
+.has-primary-background-color .is-style-eyebrow {
+	color: var(--wp--preset--color--accent);
+}
+
+/* Beam separator: a short amber line that fades out. */
+.wp-block-separator.is-style-beam {
+	border: 0;
+	height: 3px;
+	width: 96px;
+	max-width: 96px;
+	margin-left: 0;
+	background: linear-gradient(90deg, var(--wp--preset--color--accent) 0%, rgba(224, 162, 58, 0) 100%);
+	opacity: 1;
+}
+
+.wp-block-separator.is-style-beam.aligncenter,
+.has-text-align-center + .wp-block-separator.is-style-beam {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* Keep short header call-to-action labels on one line on small screens. */
+.wp-block-template-part .wp-block-button__link {
+	white-space: nowrap;
+}
+
+/*
+ * Outline buttons inside night sections. WordPress 6.6 does not apply block
+ * style variations nested inside a section style, so the light text color is
+ * set here.
+ */
+.is-style-section-night .wp-block-button.is-style-outline > .wp-block-button__link:not(:hover) {
+	background-color: transparent;
+	border-color: currentColor;
+	color: var(--wp--preset--color--base);
+}
+
+.is-style-section-night .wp-block-button.is-style-outline > .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--base);
+	border-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--primary);
+}

@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.6/theme.json",
+	"version": 3,
+	"title": "Night section",
+	"slug": "section-night",
+	"blockTypes": [ "core/group", "core/columns", "core/column", "core/cover" ],
+	"styles": {
+		"color": {
+			"background": "var:preset|color|primary",
+			"text": "var:preset|color|base"
+		},
+		"elements": {
+			"heading": { "color": { "text": "var:preset|color|base" } },
+			"link": {
+				"color": { "text": "var:preset|color|accent" },
+				":hover": { "color": { "text": "var:preset|color|base" } }
+			},
+			"button": {
+				"border": { "color": "var:preset|color|accent" },
+				"color": {
+					"background": "var:preset|color|accent",
+					"text": "var:preset|color|primary"
+				},
+				":hover": {
+					"border": { "color": "var:preset|color|base" },
+					"color": {
+						"background": "var:preset|color|base",
+						"text": "var:preset|color|primary"
+					}
+				}
+			}
+		},
+		"blocks": {
+			"core/button": {
+				"variations": {
+					"outline": {
+						"color": { "background": "transparent", "text": "var:preset|color|base" }
+					}
+				}
+			},
+			"core/separator": { "color": { "text": "var:preset|color|primary-2" } },
+			"core/post-date": { "color": { "text": "var:preset|color|mist" } },
+			"core/site-title": {
+				"elements": { "link": { "color": { "text": "var:preset|color|base" } } }
+			}
+		}
+	}
+}
