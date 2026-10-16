@@ -57,4 +57,4 @@ jobs:
           name: lighthouse-church-theme
           path: dist/lighthouse-church-*.zip
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
