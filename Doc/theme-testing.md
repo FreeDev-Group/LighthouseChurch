@@ -46,6 +46,22 @@ Every tester must test the same file. Two builds of the same commit produce diff
 3. Post on issue #9: the commit, the link to the workflow run, the checksum, and the name of the tester for H-12 (screen reader).
 4. Artifacts are kept for 30 days. If the campaign lasts longer, re-run the workflow on the same commit and announce the new link and checksum.
 
+### Current reference build
+
+The reference ZIP for this campaign is the file `lighthouse-church-0.1.0.zip` inside the official `lighthouse-church-theme` artifact of **CI run 2**. Artifacts produced by later workflow runs (including the run triggered by the commit that added this table) must **not** replace it for this campaign.
+
+| Item | Value |
+|------|-------|
+| File | `lighthouse-church-0.1.0.zip` (inner ZIP of the `lighthouse-church-theme` artifact of CI run 2) |
+| CI run | Run 2 — https://github.com/FreeDev-Group/LighthouseChurch/actions/runs/38962132740 |
+| Commit | `752833c8b846ae7d76038de0cfd0dabb0cce4d55` |
+| Size | 170,231 bytes |
+| SHA-256 | `289EF6A5FD505E1EAA01B2E7674DC481C0279E025482D5F895DA72148A489AFA` |
+| Checksum source | Computed by the Project Coordinator with `Get-FileHash` on the inner ZIP extracted from the official artifact |
+| Artifact available until | 2026-11-15 |
+
+`shasum` on macOS and Linux prints the same checksum in lowercase; compare the values without regard to letter case.
+
 ## 5. Who runs what
 
 | Tests | Who |
