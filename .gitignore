@@ -1,0 +1,53 @@
+# LightHouse Church — repository ignore rules
+# Keep patterns narrow: never ignore project source, documentation,
+# approved design assets, or the child theme source code.
+
+# --- Secrets and environment files ---
+.env
+.env.*
+!.env.example
+
+# --- WordPress configuration containing credentials ---
+wp-config.php
+wp-config-local.php
+.htpasswd
+
+# --- Database dumps ---
+*.sql
+*.sql.gz
+*.sql.zip
+
+# --- Backups and generated archives ---
+*.bak
+*.backup
+*.wpress
+/backups/
+# Generated theme/plugin installation ZIPs (build them from source instead)
+*.zip
+/dist/
+
+# --- WordPress runtime-generated files (if a WordPress install is ever placed here) ---
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/backup*/
+wp-content/debug.log
+*.log
+
+# --- Dependencies ---
+node_modules/
+
+# --- Operating-system files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Editor / IDE files ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Local Claude Code settings (personal, not shared) ---
+.claude/settings.local.json
