@@ -24,14 +24,14 @@ Use only this ZIP. Do not use a ZIP rebuilt locally or from a later workflow run
 
 | # | Step | Expected | Done by / date / evidence |
 |---|------|----------|---------------------------|
-| A1 | hPanel › Websites: note the website, the domain it serves and the hosting plan | Domain and plan recorded (P-005) | |
-| A2 | Open the WordPress admin from hPanel and note its address | The admin belongs to the same website as A1. Expected address: `https://linen-viper-933608.hostingersite.com/` or `https://lighthousechurchbujumbura.org/` (P-005) | |
-| A3 | Tools › Site Health › Info: WordPress, PHP, site URL, home URL | WordPress 7.1.3, PHP 8.3.x; WordPress installed at the root of the domain (no sub-folder) | |
-| A4 | HTTPS: open the site address with `https://` | Padlock, no certificate warning | |
-| A5 | Appearance › Themes: note the **active theme** and its version | Recorded (needed for rollback) | |
-| A6 | Pages, Posts, Media, Plugins: note counts, titles of existing pages, active plugins | Recorded. Check whether pages with the slugs `accueil`, `a-propos`, `ministeres`, `evenements`, `ressources`, `actualites`, `galerie`, `donner`, `contact` already exist | |
+| A1 | hPanel › Websites: note the website, the domain it serves and the hosting plan | Domain and plan recorded (P-005) | Claude Code, 2026-10-24, Hostinger connector (read-only): one website only, `lighthousechurchbujumbura.org` (account `u628308143`, created 2026-10-12, root `domains/lighthousechurchbujumbura.org/public_html`); plan `hostinger_premium_v6`, order active. |
+| A2 | Open the WordPress admin from hPanel and note its address | The admin belongs to the same website as A1. Expected address: `https://linen-viper-933608.hostingersite.com/` or `https://lighthousechurchbujumbura.org/` (P-005) | Claude Code, 2026-10-24: one WordPress installation only (Hostinger id 31057790), URL `https://lighthousechurchbujumbura.org`, at the domain root. The temporary address serves the same page markup and plugins. Admin address not opened. |
+| A3 | Tools › Site Health › Info: WordPress, PHP, site URL, home URL | WordPress 7.1.3, PHP 8.3.x; WordPress installed at the root of the domain (no sub-folder) | Claude Code, 2026-10-24, connector and public headers: WordPress 7.1.3 (no core update pending), PHP 8.3.35, language `fr_FR`, installation reported valid. Site Health not opened. |
+| A4 | HTTPS: open the site address with `https://` | Padlock, no certificate warning | Claude Code, 2026-10-24: HTTPS answers 200 with a valid certificate on the domain and on the temporary address. `www.` not checked from the session. |
+| A5 | Appearance › Themes: note the **active theme** and its version | Recorded (needed for rollback) | Claude Code, 2026-10-24, connector: active **Twenty Twenty-Five 1.5**; Twenty Twenty-Four 1.6 and Twenty Twenty-Three 1.7 installed, inactive. |
+| A6 | Pages, Posts, Media, Plugins: note counts, titles of existing pages, active plugins | Recorded. Check whether pages with the slugs `accueil`, `a-propos`, `ministeres`, `evenements`, `ressources`, `actualites`, `galerie`, `donner`, `contact` already exist | Claude Code, 2026-10-24: public REST API shows 0 published pages and 0 published posts (drafts and media not visible without admin access). Active plugins: LiteSpeed Cache 7.9.1 (known vulnerabilities, fixed in 7.9.2), Hostinger Tools 3.0.79, Hostinger Easy Onboarding 3.0.4, Hostinger Reach 1.8.6, all with updates available. One database, about 12 MB. |
 | A7 | Settings › General, Reading, Permalinks: note current values | Recorded (needed for rollback) | |
-| A8 | Users: list accounts and roles | Recorded; no shared administrator account (issue #4) | |
+| A8 | Users: list accounts and roles | Recorded; no shared administrator account (issue #4) | Claude Code, 2026-10-24: one public author, login `admin` (installation administrator). Roles and other accounts not checked. |
 | A9 | Screenshots of the homepage, desktop and mobile | "Before" state kept with the evidence | |
 
 **Stop** if the WordPress admin of A2 does not belong to the website of A1, or if the domain or instance is not certain.
