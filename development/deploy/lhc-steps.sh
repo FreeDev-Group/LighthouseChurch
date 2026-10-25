@@ -9,6 +9,7 @@ S="$HOME/lhc-ops"; WP="$HOME/domains/lighthousechurchbujumbura.org/public_html"
 # Reviewed page content and page script (commit e48b2d8).
 SRC="https://raw.githubusercontent.com/FreeDev-Group/LighthouseChurch/e48b2d80235b093d0ff24781eb815741e7c3e669"
 SRC_DEPLOY="https://raw.githubusercontent.com/FreeDev-Group/LighthouseChurch/${LHC_REF:-claude/lighthouse-church-init-71ahya}/development/deploy"
+UA="LighthouseChurchBujumbura/1.0 (https://lighthousechurchbujumbura.org; website setup)"
 fetch_pages() {
   mkdir -p "$S/pages"
   curl -sSf -o "$S/create-pages.php" "$SRC/development/deploy/create-pages.php" || return 1
@@ -109,11 +110,16 @@ verify-user-delete)
   ;;
 img-search)
   # Candidate photos under CC0 or Public Domain Mark from the Openverse API (no attribution required).
-  for q in "lighthouse night" "lighthouse sunset" "open bible" "bible reading" "church chairs" "candles light" "praying hands" "hands raised worship" "sunrise lake" "lake tanganyika"; do
+  # rawpixel previews are watermarked: only Wikimedia Commons and StockSnap originals.
+  for q in "lighthouse" "lighthouse night" "lighthouse sunset" "bible" "open bible" "praying" "worship" "church interior" "candle" "sunrise" "Bujumbura" "Burundi"; do
     echo "## $q"
-    curl -sSfG "https://api.openverse.org/v1/images/" --data-urlencode "q=$q" -d license=cc0,pdm -d size=large -d page_size=6 -d mature=false |
+    curl -sSfG "https://api.openverse.org/v1/images/" --data-urlencode "q=$q" -d license=cc0 -d source=wikimedia,stocksnap -d size=large -d page_size=8 -d mature=false |
       php -r '$d = json_decode(stream_get_contents(STDIN), true); foreach ($d["results"] ?? [] as $r) { echo implode(" | ", [$r["width"]."x".$r["height"], $r["license"], $r["title"], $r["creator"], $r["url"], $r["foreign_landing_url"]]), "\n"; }'
   done
+  ;;
+img-delete)
+  # Removes the rejected first candidates (watermarked previews), imported by img-import on 2026-10-25.
+  for id in 33 34 35 36 37 38; do w post delete "$id" --force; done
   ;;
 img-import)
   # Imports the CC0 candidates of development/deploy/image-candidates.tsv into the Media Library.
@@ -121,7 +127,7 @@ img-import)
   while IFS=$'\t' read -r key url alt title lic landing; do
     [ -n "$key" ] || continue
     big="${url/editor_1024/image_1300}"; f="$S/img/$key.jpg"
-    curl -sSfL -o "$f" "$big" 2>/dev/null || curl -sSfL -o "$f" "$url" || { echo "$key download failed"; continue; }
+    curl -sSfL -A "$UA" -o "$f" "$big" 2>/dev/null || curl -sSfL -A "$UA" -o "$f" "$url" || { echo "$key download failed"; continue; }
     id=$(w media import "$f" --title="$alt" --alt="$alt" --desc="Photo d'illustration provisoire, libre de droits (licence ${lic^^}), à remplacer par une photo de l'Église. Ne représente pas LightHouse Church. Source : $title — $landing" --porcelain)
     echo "$key $id $(w eval "echo wp_get_attachment_url( $id ), ' ', implode( 'x', array_slice( wp_get_attachment_image_src( $id, 'full' ), 1, 2 ) );")"
   done < "$S/image-candidates.tsv"
