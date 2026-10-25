@@ -8,6 +8,7 @@ export PATH="$PATH:/usr/local/bin:/usr/bin:/bin"
 S="$HOME/lhc-ops"; WP="$HOME/domains/lighthousechurchbujumbura.org/public_html"
 # Reviewed page content and page script (commit e48b2d8).
 SRC="https://raw.githubusercontent.com/FreeDev-Group/LighthouseChurch/e48b2d80235b093d0ff24781eb815741e7c3e669"
+SRC_DEPLOY="https://raw.githubusercontent.com/FreeDev-Group/LighthouseChurch/${LHC_REF:-claude/lighthouse-church-init-71ahya}/development/deploy"
 fetch_pages() {
   mkdir -p "$S/pages"
   curl -sSf -o "$S/create-pages.php" "$SRC/development/deploy/create-pages.php" || return 1
@@ -113,6 +114,17 @@ img-search)
     curl -sSfG "https://api.openverse.org/v1/images/" --data-urlencode "q=$q" -d license=cc0,pdm -d size=large -d page_size=6 -d mature=false |
       php -r '$d = json_decode(stream_get_contents(STDIN), true); foreach ($d["results"] ?? [] as $r) { echo implode(" | ", [$r["width"]."x".$r["height"], $r["license"], $r["title"], $r["creator"], $r["url"], $r["foreign_landing_url"]]), "\n"; }'
   done
+  ;;
+img-import)
+  # Imports the CC0 candidates of development/deploy/image-candidates.tsv into the Media Library.
+  mkdir -p "$S/img"; curl -sSf -o "$S/image-candidates.tsv" "$SRC_DEPLOY/image-candidates.tsv" || exit 1
+  while IFS=$'\t' read -r key url alt title lic landing; do
+    [ -n "$key" ] || continue
+    big="${url/editor_1024/image_1300}"; f="$S/img/$key.jpg"
+    curl -sSfL -o "$f" "$big" 2>/dev/null || curl -sSfL -o "$f" "$url" || { echo "$key download failed"; continue; }
+    id=$(w media import "$f" --title="$alt" --alt="$alt" --desc="Photo d'illustration provisoire, libre de droits (licence ${lic^^}), à remplacer par une photo de l'Église. Ne représente pas LightHouse Church. Source : $title — $landing" --porcelain)
+    echo "$key $id $(w eval "echo wp_get_attachment_url( $id ), ' ', implode( 'x', array_slice( wp_get_attachment_image_src( $id, 'full' ), 1, 2 ) );")"
+  done < "$S/image-candidates.tsv"
   ;;
 rollback)
   w theme activate twentytwentyfive
