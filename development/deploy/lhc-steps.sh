@@ -3,7 +3,7 @@
 # Started from a short-lived hPanel cron job (commands are limited to 255 characters):
 #   mkdir -p ~/lhc-ops && cd ~/lhc-ops && curl -sSfO <raw URL of this file at a fixed commit> ; bash lhc-steps.sh <step>
 # A finished step only prints its log again, so the cron job can fire more than once safely.
-# Steps: inventory, backup, theme, pages-dry, pages, golive, rollback (see Doc/deployment/hostinger-deployment.md).
+# Steps: inventory, backup, theme, pages-dry, pages, golive, verify-user, verify-user-delete, rollback (see Doc/deployment/hostinger-deployment.md).
 export PATH="$PATH:/usr/local/bin:/usr/bin:/bin"
 S="$HOME/lhc-ops"; WP="$HOME/domains/lighthousechurchbujumbura.org/public_html"
 # Reviewed page content and page script (commit e48b2d8).
@@ -94,6 +94,17 @@ golive)
   w cache flush
   w theme list; for o in blogname show_on_front page_on_front page_for_posts permalink_structure timezone_string; do printf '%s = ' "$o"; w option get "$o"; done
   w post list --post_type=page,wp_navigation --fields=ID,post_type,post_status,post_name,post_title
+  ;;
+verify-user)
+  # Temporary Editor account used once to test editing in the block editor; removed by verify-user-delete.
+  pass=$(openssl rand -hex 16)
+  w user get lhc-verify --field=ID >/dev/null 2>&1 || w user create lhc-verify lhc-verify@lighthousechurchbujumbura.org --role=editor --user_pass="$pass" --display_name="Verification (temporary)"
+  w user update lhc-verify --user_pass="$pass" --skip-email
+  echo "login lhc-verify password $pass"
+  ;;
+verify-user-delete)
+  w user delete lhc-verify --reassign=1 --yes
+  w user list --fields=ID,user_login,roles
   ;;
 rollback)
   w theme activate twentytwentyfive
