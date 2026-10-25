@@ -79,7 +79,7 @@ golive)
   w option update timezone_string 'Africa/Bujumbura'
   [ "$(w option get permalink_structure)" = "/%postname%/" ] || w rewrite structure '/%postname%/' --hard
   for s in accueil a-propos ministeres evenements ressources actualites galerie donner contact; do
-    id=$(w post list --post_type=page --name="$s" --post_status=any --field=ID); [ -n "$id" ] || { echo "missing $s"; exit 1; }
+    id=$(w eval "\$p = get_page_by_path( '$s', OBJECT, 'page' ); echo \$p ? \$p->ID : '';"); [ -n "$id" ] || { echo "missing $s"; exit 1; }
     st=$(w post get "$id" --field=post_status); [ "$st" = publish ] || w post update "$id" --post_status=publish
     eval "id_${s//-/_}=$id"
   done
