@@ -3,7 +3,7 @@
 # Started from a short-lived hPanel cron job (commands are limited to 255 characters):
 #   mkdir -p ~/lhc-ops && cd ~/lhc-ops && curl -sSfO <raw URL of this file at a fixed commit> ; bash lhc-steps.sh <step>
 # A finished step only prints its log again, so the cron job can fire more than once safely.
-# Steps: inventory, backup, theme, pages-dry, pages, golive, verify-user, verify-user-delete, rollback (see Doc/deployment/hostinger-deployment.md).
+# Steps: inventory, backup, theme, pages-dry, pages, golive, verify-user, verify-user-delete, img-search, img-import, home-draft, home-apply, rollback (see Doc/deployment/hostinger-deployment.md).
 export PATH="$PATH:/usr/local/bin:/usr/bin:/bin"
 S="$HOME/lhc-ops"; WP="$HOME/domains/lighthousechurchbujumbura.org/public_html"
 # Reviewed page content and page script (commit e48b2d8).
@@ -131,6 +131,22 @@ img-import)
     id=$(w media import "$f" --title="$alt" --alt="$alt" --desc="Photo d'illustration provisoire, libre de droits (licence ${lic^^}), à remplacer par une photo de l'Église. Ne représente pas LightHouse Church. Source : $title — $landing" --porcelain)
     echo "$key $id $(w eval "echo wp_get_attachment_url( $id ), ' ', implode( 'x', array_slice( wp_get_attachment_image_src( $id, 'full' ), 1, 2 ) );")"
   done < "$S/image-candidates.tsv"
+  ;;
+home-draft|home-apply)
+  # Homepage and footer layout update; files come from development/deploy at LHC_REF.
+  mkdir -p "$S/drafts"
+  curl -sSf -o "$S/apply-home.php" "$SRC_DEPLOY/apply-home.php" || exit 1
+  if [ "${step%.*}" = home-draft ]; then files="accueil-v2 footer-v2"; else files="accueil-final footer-final"; fi
+  for f in $files; do curl -sSf -o "$S/drafts/$f.html" "$SRC_DEPLOY/drafts/$f.html" || exit 1; done
+  sha256sum "$S/apply-home.php" "$S/drafts/"*.html
+  if [ "${step%.*}" = home-draft ]; then
+    # Rejected image candidates L, N, P, R (attachments imported by img-import.2).
+    for id in 40 42 44 46; do w post get "$id" --field=ID >/dev/null 2>&1 && w post delete "$id" --force; done
+    w eval-file "$S/apply-home.php" draft "$S/drafts"
+  else
+    w eval-file "$S/apply-home.php" apply "$S/drafts"
+    w litespeed-purge all 2>/dev/null || true; w cache flush
+  fi
   ;;
 rollback)
   w theme activate twentytwentyfive
