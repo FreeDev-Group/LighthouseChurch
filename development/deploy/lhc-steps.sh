@@ -106,6 +106,14 @@ verify-user-delete)
   w user delete lhc-verify --reassign=1 --yes
   w user list --fields=ID,user_login,roles
   ;;
+img-search)
+  # Candidate photos under CC0 or Public Domain Mark from the Openverse API (no attribution required).
+  for q in "lighthouse night" "lighthouse sunset" "open bible" "bible reading" "church chairs" "candles light" "praying hands" "hands raised worship" "sunrise lake" "lake tanganyika"; do
+    echo "## $q"
+    curl -sSfG "https://api.openverse.org/v1/images/" --data-urlencode "q=$q" -d license=cc0,pdm -d size=large -d page_size=6 -d mature=false |
+      php -r '$d = json_decode(stream_get_contents(STDIN), true); foreach ($d["results"] ?? [] as $r) { echo implode(" | ", [$r["width"]."x".$r["height"], $r["license"], $r["title"], $r["creator"], $r["url"], $r["foreign_landing_url"]]), "\n"; }'
+  done
+  ;;
 rollback)
   w theme activate twentytwentyfive
   w option update show_on_front "$(cat "$S/prev.show_on_front" 2>/dev/null || echo posts)"
