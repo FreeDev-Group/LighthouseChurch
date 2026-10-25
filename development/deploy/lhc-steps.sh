@@ -80,7 +80,7 @@ golive)
   [ "$(w option get permalink_structure)" = "/%postname%/" ] || w rewrite structure '/%postname%/' --hard
   for s in accueil a-propos ministeres evenements ressources actualites galerie donner contact; do
     id=$(w eval "\$p = get_page_by_path( '$s', OBJECT, 'page' ); echo \$p ? \$p->ID : '';"); [ -n "$id" ] || { echo "missing $s"; exit 1; }
-    st=$(w post get "$id" --field=post_status); [ "$st" = publish ] || w post update "$id" --post_status=publish
+    st=$(w post get "$id" --field=post_status); [ "$st" = publish ] || w eval "wp_publish_post( $id );"  # "wp post update" rejects page-full-width while the old theme is active
     eval "id_${s//-/_}=$id"
   done
   w option update show_on_front page; w option update page_on_front "$id_accueil"; w option update page_for_posts "$id_actualites"
