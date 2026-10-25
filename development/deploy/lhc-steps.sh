@@ -39,7 +39,12 @@ inventory)
   ;;
 backup)
   TS=$(date -u +%Y%m%d-%H%M%S); B="$HOME/lhc-backups/$TS"; mkdir -p "$B"; chmod 700 "$HOME/lhc-backups" "$B"
-  w db export "$B/db.sql" --add-drop-table && gzip -9 "$B/db.sql"
+  # "wp db export" needs proc_open(), disabled on this host: call mysqldump directly.
+  # Credentials go to a private temporary file, never to the command line or the log.
+  cnf=$(mktemp); chmod 600 "$cnf"
+  printf '[client]\nuser=%s\npassword="%s"\nhost=%s\n' "$(w config get DB_USER)" "$(w config get DB_PASSWORD)" "$(w config get DB_HOST)" > "$cnf"
+  mysqldump --defaults-extra-file="$cnf" --single-transaction --no-tablespaces --add-drop-table "$(w config get DB_NAME)" > "$B/db.sql"; echo "mysqldump exit $?"
+  rm -f "$cnf"; gzip -9 "$B/db.sql"
   tar czf "$B/files.tar.gz" -C "$(dirname "$WP")" public_html
   ls -l "$B"; sha256sum "$B"/*
   echo "gzip test:"; gzip -t "$B/db.sql.gz" && gzip -t "$B/files.tar.gz" && echo OK
