@@ -148,6 +148,27 @@ home-draft|home-apply)
     w litespeed-purge all 2>/dev/null || true; w cache flush
   fi
   ;;
+audit)
+  # Read-only: backups, deployed theme files, plugin versions and LiteSpeed Cache release data.
+  for b in "$HOME"/lhc-backups/*/; do
+    echo "## $b"; ls -l --time-style=full-iso "$b"; sha256sum "$b"*
+    for f in "$b"*.gz; do gzip -t "$f" && echo "gzip OK $(basename "$f")"; done
+    [ -f "$b/files.tar.gz" ] && echo "files: $(tar tzf "$b/files.tar.gz" | wc -l)"
+    [ -f "$b/db.sql.gz" ] && echo "tables: $(zcat "$b/db.sql.gz" | grep -c '^CREATE TABLE') | $(zcat "$b/db.sql.gz" | tail -1)"
+  done
+  ls -ld "$HOME/lhc-backups" "$HOME"/lhc-backups/*
+  echo "## theme files"; (cd "$WP/wp-content/themes/lighthouse-church" && find . -type f -print0 | sort -z | xargs -0 sha256sum)
+  echo "## versions"; w core version; php -v | head -1; w plugin list --fields=name,status,version,update_version
+  echo "## litespeed-cache on wordpress.org"
+  curl -sSf "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&slug=litespeed-cache&fields[sections]=1" |
+    php -r '$d = json_decode(stream_get_contents(STDIN), true); foreach (["version", "requires", "tested", "requires_php", "last_updated"] as $k) { echo "$k: ", $d[$k] ?? "", "\n"; } echo substr(strip_tags($d["sections"]["changelog"] ?? ""), 0, 1500), "\n";'
+  echo "## cron output files"; ls -la "$HOME/.logs"
+  echo "## lhc-ops"; ls -la "$S" "$S/logs"
+  ;;
+export-db)
+  # Read-only: prints the database backup base64-encoded, so it can be copied out through the cron output.
+  f="$HOME/lhc-backups/20261025-202803/db.sql.gz"; sha256sum "$f"; base64 -w 0 "$f"; echo
+  ;;
 rollback)
   w theme activate twentytwentyfive
   w option update show_on_front "$(cat "$S/prev.show_on_front" 2>/dev/null || echo posts)"
