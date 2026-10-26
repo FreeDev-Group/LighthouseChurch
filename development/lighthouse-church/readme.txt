@@ -2,7 +2,7 @@
 Contributors: FreeDEV
 Requires at least: 6.6
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,9 @@ In theme.json (palette, fonts, font sizes, spacing, element and block styles)
 and in styles/sections/ (section styles: night, sand, card).
 
 == Changelog ==
+
+= 0.1.1 =
+* Fix: the open mobile menu had no inner spacing (its links touched the screen edge). The root top and bottom padding in theme.json are now "0px": a unitless "0" made the core clamp() padding of the menu overlay invalid.
 
 = 0.1.0 =
 * Initial development version. Not released.
