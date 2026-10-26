@@ -169,6 +169,30 @@ export-db)
   # Read-only: prints the database backup base64-encoded, so it can be copied out through the cron output.
   f="$HOME/lhc-backups/20261025-202803/db.sql.gz"; sha256sum "$f"; base64 -w 0 "$f"; echo
   ;;
+restore-test)
+  # Restores a backup into an isolated temporary database and a temporary folder, never into the live site.
+  # ~/lhc-ops/rt.cnf ([client] user, password, database of the temporary database) is written by a cron job
+  # just before and removed here; the temporary database is deleted afterwards with the Hostinger API.
+  B="$HOME/lhc-backups/20261025-202803"; T="$HOME/lhc-restore-test"; cnf="$S/rt.cnf"
+  [ -f "$cnf" ] || { echo "missing $cnf"; exit 1; }
+  live_db=$(w config get DB_NAME); rt_db=$(sed -n 's/^database=//p' "$cnf")
+  [ -n "$rt_db" ] && [ "$rt_db" != "$live_db" ] || { echo "refused: temporary database must differ from the live one"; exit 1; }
+  zcat "$B/db.sql.gz" | mysql --defaults-extra-file="$cnf"; echo "import exit ${PIPESTATUS[1]}"
+  q() { mysql --defaults-extra-file="$cnf" -N -e "$1"; }
+  echo "tables: $(q 'SHOW TABLES' | wc -l)"
+  for t in wp_posts wp_postmeta wp_options wp_users wp_terms; do echo "$t restored=$(q "SELECT COUNT(*) FROM $t")"; done
+  echo "siteurl=$(q "SELECT option_value FROM wp_options WHERE option_name='siteurl'") template=$(q "SELECT option_value FROM wp_options WHERE option_name='template'")"
+  echo "pages: $(q "SELECT CONCAT(ID,':',post_name,':',post_status) FROM wp_posts WHERE post_type='page'" | tr '\n' ' ')"
+  rm -f "$cnf"
+  rm -rf "$T"; mkdir -p "$T"; chmod 700 "$T"
+  tar xzf "$B/files.tar.gz" -C "$T"; echo "extract exit $?"
+  echo "extracted files: $(find "$T/public_html" -type f | wc -l)"
+  for f in wp-config.php wp-includes/version.php wp-content/themes/twentytwentyfive/style.css; do [ -f "$T/public_html/$f" ] && echo "present $f"; done
+  grep -o "wp_version = '[^']*'" "$T/public_html/wp-includes/version.php"
+  (cd "$T/public_html" && find wp-admin wp-includes -type f -print0 | sort -z | xargs -0 sha256sum) | sha256sum | sed 's/^/core files digest (backup) /'
+  (cd "$WP" && find wp-admin wp-includes -type f -print0 | sort -z | xargs -0 sha256sum) | sha256sum | sed 's/^/core files digest (live)   /'
+  rm -rf "$T"; echo "temporary folder removed"
+  ;;
 rollback)
   w theme activate twentytwentyfive
   w option update show_on_front "$(cat "$S/prev.show_on_front" 2>/dev/null || echo posts)"
