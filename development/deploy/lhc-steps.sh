@@ -6,7 +6,10 @@
 # LHC_SITE chooses the WordPress installation; there is no default, so a command can never reach
 # production by omission. LHC_REF is the commit (7 to 40 hex characters) whose repository files are used.
 # Started from a short-lived hPanel cron job (commands are limited to 255 characters), for example:
-#   cd ~/lhc-ops&&curl -sSfO <raw URL of this file at LHC_REF>&&LHC_SITE=staging LHC_REF=<sha> bash lhc-steps.sh inventory
+#   1st job: curl -sSf -o /home/u628308143/lhc-ops/lhc-steps.sh <raw URL of this file at LHC_REF>
+#   2nd job: LHC_SITE=staging LHC_REF=<sha> bash /home/u628308143/lhc-ops/lhc-steps.sh inventory
+# One simple command per job: hPanel only logs the last command, a "%" ends the command (crontab), and
+# the API firewall refuses commands such as "; curl".
 # A finished step only prints its log again, so the cron job can fire more than once safely. A failed step
 # stops the run and stays failed: re-run it under a new name ("backup.2" runs "backup" with a new log).
 # Steps are listed in the case statement below (see Doc/deployment/).
@@ -141,6 +144,22 @@ theme)
   echo "checksum matches the reference"
   w theme install "$THEME_ZIP"
   w theme list
+  ;;
+theme-copy)
+  # Staging only, when the reference ZIP is no longer on the server: copies the theme folder deployed on
+  # production (read-only there) after checking every file against theme-0.1.0.sha256, the 36 files of the
+  # reference ZIP 0.1.0 (commit 752833c). The copy is checked again before it is used.
+  staging_only "$step"
+  curl -sSf -o "$S/theme-0.1.0.sha256" "$SRC_DEPLOY/theme-0.1.0.sha256" || exit 1
+  src="$PROD_WP/wp-content/themes/lighthouse-church"; dst="$WP/wp-content/themes/lighthouse-church"
+  [ -e "$dst" ] && { echo "$dst already exists: not changed"; exit 1; }
+  (cd "$src" && sha256sum --quiet -c "$S/theme-0.1.0.sha256") || { echo "production theme differs from 0.1.0: not copied"; exit 1; }
+  echo "production theme: $(cd "$src" && find . -type f | wc -l) files, all $(wc -l < "$S/theme-0.1.0.sha256") match 0.1.0"
+  cp -R "$src" "$dst"
+  (cd "$dst" && sha256sum --quiet -c "$S/theme-0.1.0.sha256") || { echo "copy check failed"; rm -rf "$dst"; exit 1; }
+  extra=$(cd "$dst" && find . -type f | sed 's|^\./||' | sort | comm -23 - <(sed 's/^[0-9a-f]*  //' "$S/theme-0.1.0.sha256" | sort))
+  [ -z "$extra" ] || { echo "extra files in the copy:"; echo "$extra"; }
+  echo "staging theme: all files match 0.1.0"; w theme list
   ;;
 pages)
   fetch_pages || exit 1
