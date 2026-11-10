@@ -6,7 +6,7 @@ These rules apply to every Claude Code conversation in this repository. The team
 
 - **Project and church name:** LightHouse Church Bujumbura. Maintained by the FreeDEV team.
 - **CMS:** WordPress, with a standalone Full Site Editing block theme **LightHouse Church** (slug `lighthouse-church`) at `development/lighthouse-church/` (see `Doc/decisions.md`: D-014 and D-016 are confirmed; D-015, D-017 and the minimum WordPress/PHP versions are provisional).
-- **Hosting:** a single WordPress production environment on Hostinger. Development, testing and deployment take place in this environment. Separate DEV and STAGING environments will not be used (see `Doc/decisions.md`, D-009). Follow §10 for every change.
+- **Hosting:** two independent WordPress installations on Hostinger (see `Doc/decisions.md`, D-021, which supersedes D-009): the production website `https://lighthousechurchbujumbura.org/` and a shared, access-protected development environment `https://staging.lighthousechurchbujumbura.org/` (separate folder, database and accounts; nothing synchronised automatically). Follow §10 for every change to production.
 - **Key documents:**
   - `README.md` — project overview and workflow
   - `Doc/LightHouse-Church-Website-Project-Requirements.pdf` — requirements (draft v0.1)
@@ -88,7 +88,7 @@ Task ownership is assigned through GitHub Issues.
 
 ## 10. Production workflow and safety
 
-All development, testing and deployment happen on the public production website. That is **not** permission to make unreviewed or uncontrolled changes to it.
+Development and testing happen on the staging environment (D-021), never on the public production website. Changes reach production only through review, page by page, after a backup. The rules below apply to every production change.
 
 1. **GitHub is the source of truth** for code and technical documentation. Any code changed in WordPress must be synchronized back to GitHub.
 2. **Back up first.** Before any significant change, back up the WordPress files **and** the database, and confirm the backup completed.
