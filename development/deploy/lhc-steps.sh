@@ -45,7 +45,7 @@ if [ "$LHC_SITE" = staging ]; then
   case "$(readlink -m "$WP")/" in "$(readlink -m "$PROD_WP")"/*) echo "refused: staging path inside production"; exit 1 ;; esac
   if [ -f "$WP/wp-config.php" ]; then
     [ "$(w config get DB_NAME)" != "$(wprod config get DB_NAME)" ] || { echo "refused: staging uses the production database"; exit 1; }
-    [ "$(w option get siteurl --skip-plugins)" = "$URL" ] || { echo "refused: staging siteurl is not $URL"; exit 1; }
+    [[ "$(w option get siteurl --skip-plugins)" =~ ^https?://$STAGING_DOMAIN/?$ ]] || { echo "refused: staging siteurl is not $URL"; exit 1; }
   fi
 else
   [ "$(w option get siteurl --skip-plugins)" = "$URL" ] || { echo "refused: production siteurl is not $URL"; exit 1; }
@@ -105,6 +105,13 @@ inventory)
     for p in / /a-propos/ /ministeres/ /evenements/ /ressources/ /actualites/ /galerie/ /donner/ /contact/; do
       printf '%s %s %s\n' "$p" "$(curl -s -o "$S/http.tmp" -w '%{http_code} %{size_download}' --max-time 30 "$URL$p")" "$(grep -o '<title>[^<]*' "$S/http.tmp" | head -1)"
     done; rm -f "$S/http.tmp"
+  else
+    for h in "$STAGING_DOMAIN" "www.$STAGING_DOMAIN" "$PROD_DOMAIN"; do
+      printf 'dns %s: %s' "$h" "$(getent ahosts "$h" | awk '{print $1}' | sort -u | tr '\n' ' ')"
+      command -v dig >/dev/null && printf '| 8.8.8.8: %s' "$(dig +short @8.8.8.8 "$h" A "$h" AAAA | tr '\n' ' ')"; echo
+    done
+    curl -sSI --max-time 30 "$URL/" | tr -d '\r' | grep -iE '^(HTTP|server|platform|x-robots-tag|x-hcdn|x-cache|x-litespeed|www-authenticate|location)'
+    echo | openssl s_client -connect "$STAGING_DOMAIN:443" -servername "$STAGING_DOMAIN" 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName
   fi
   ;;
 users-list)
@@ -176,6 +183,7 @@ pages)
 setup)
   # Staging only: same reading settings, permalinks, theme and menu as production; no production content.
   staging_only "$step"; set -e
+  w option update siteurl "$URL"; w option update home "$URL"
   w option update blogname '[DEV] LightHouse Church Bujumbura'
   w option update blogdescription 'Environnement de développement — ce site n’est pas le site officiel'
   w option update timezone_string 'Africa/Bujumbura'
@@ -256,6 +264,12 @@ accounts)
   # (read-only lookup, so no address is written in Git). WordPress e-mails each person a link to set
   # their own password. Each entry: <production user ID>:<staging login>:<display name>.
   staging_only "$step"
+  # The installation administrator (Salomon) was created through the Hostinger API: replace its password by a
+  # random value that nobody knows, and e-mail Salomon the standard WordPress link to choose a new one.
+  if w user get salomon --field=ID >/dev/null 2>&1; then
+    w user update salomon --user_pass="$(openssl rand -base64 30)" --skip-email >/dev/null && echo "salomon: password replaced"
+    w eval '$r = retrieve_password( "salomon" ); echo is_wp_error( $r ) ? "reset e-mail failed: " . $r->get_error_message() : "reset e-mail sent", "\n";'
+  fi
   for m in $STAGING_EDITORS; do
     plog="${m%%:*}"; slog="${m#*:}"; slog="${slog%%:*}"; name="${m##*:}"  # plog: production user ID
     mail=$(wprod user get "$plog" --field=user_email 2>/dev/null) || { echo "$plog: not found on production, skipped"; continue; }
