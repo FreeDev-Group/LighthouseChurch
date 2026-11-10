@@ -171,7 +171,8 @@ theme-copy)
   echo "production theme: $(cd "$src" && find . -type f | wc -l) files, all $(wc -l < "$S/theme-0.1.0.sha256") match 0.1.0"
   cp -R "$src" "$dst"
   (cd "$dst" && sha256sum --quiet -c "$S/theme-0.1.0.sha256") || { echo "copy check failed"; rm -rf "$dst"; exit 1; }
-  extra=$(cd "$dst" && find . -type f | sed 's|^\./||' | sort | comm -23 - <(sed 's/^[0-9a-f]*  //' "$S/theme-0.1.0.sha256" | sort))
+  sed 's/^[0-9a-f]*  //' "$S/theme-0.1.0.sha256" | sort > "$S/theme-0.1.0.list"  # no process substitution under cron
+  extra=$(cd "$dst" && find . -type f | sed 's|^\./||' | sort | comm -23 - "$S/theme-0.1.0.list")
   [ -z "$extra" ] || { echo "extra files in the copy:"; echo "$extra"; }
   echo "staging theme: all files match 0.1.0"; w theme list
   ;;
