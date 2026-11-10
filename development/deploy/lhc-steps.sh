@@ -33,8 +33,9 @@ THEME_ZIP="$HOME/lhc-ops/work/a/lighthouse-church-0.1.0.zip"
 THEME_SHA="289ef6a5fd505e1eaa01b2e7674dc481c0279e025482d5f895da72148a489afa"
 # Staging HTTP login (not a WordPress account): the hash next to the document root, the plain value in a private file.
 HTPASSWD="$(dirname "$WP")/.htpasswd"; HTLOGIN="$HOME/lhc-secrets/staging-http-login.txt"
-# Staging Editor accounts of the mentees (#10 to #12): <production login>:<staging login>:<display name>.
-STAGING_EDITORS=""
+# Staging Editor accounts of the mentees (#10 to #12): <production user ID>:<staging login>:<display name>.
+# Only the e-mail address is taken from the production account; nothing else is copied.
+STAGING_EDITORS="4:yusse:Yusse 2:alain:Alain 3:david:David"
 
 w() { wp --path="$WP" --skip-themes=lighthouse-church "$@"; }
 wprod() { wp --path="$PROD_WP" --skip-themes=lighthouse-church --skip-plugins "$@"; }  # read-only use only
@@ -98,7 +99,13 @@ inventory)
   w post list --post_type=page,post,wp_navigation,attachment,wp_template,wp_template_part,wp_global_styles,wp_block --post_status=any --fields=ID,post_type,post_status,post_name,post_title,post_modified
   w user list --fields=ID,user_login,roles
   w db tables --all-tables-with-prefix
+  w db size --tables --size_format=kb
   du -sh "$WP"; df -h "$HOME" | tail -1; ls -la "$(dirname "$WP")"
+  if [ "$LHC_SITE" = prod ]; then
+    for p in / /a-propos/ /ministeres/ /evenements/ /ressources/ /actualites/ /galerie/ /donner/ /contact/; do
+      printf '%s %s %s\n' "$p" "$(curl -s -o "$S/http.tmp" -w '%{http_code} %{size_download}' --max-time 30 "$URL$p")" "$(grep -o '<title>[^<]*' "$S/http.tmp" | head -1)"
+    done; rm -f "$S/http.tmp"
+  fi
   ;;
 users-list)
   # Read-only: accounts with e-mail addresses (output stays in the cron log, never in Git).
@@ -133,7 +140,7 @@ backups-check)
     for f in "$b"*.gz; do gzip -t "$f" && echo "gzip OK $(basename "$f")"; done
   done
   ls -ld "$BK" "$BK"/*; df -h "$HOME" | tail -1; du -sh "$BK"
-  echo "## reference theme ZIP"; ls -l "$THEME_ZIP" && sha256sum "$THEME_ZIP"
+  echo "## reference theme ZIP"; if [ -f "$THEME_ZIP" ]; then sha256sum "$THEME_ZIP"; else echo "not on the server (use theme-copy)"; fi
   ;;
 theme)
   # Installs the reference ZIP 0.1.0 kept on the server, only if its checksum matches.
@@ -247,10 +254,10 @@ EOF
 accounts)
   # Staging only: one Editor account per mentee, with the e-mail address of their production account
   # (read-only lookup, so no address is written in Git). WordPress e-mails each person a link to set
-  # their own password. Each entry: <production login>:<staging login>:<display name>.
+  # their own password. Each entry: <production user ID>:<staging login>:<display name>.
   staging_only "$step"
   for m in $STAGING_EDITORS; do
-    plog="${m%%:*}"; slog="${m#*:}"; slog="${slog%%:*}"; name="${m##*:}"
+    plog="${m%%:*}"; slog="${m#*:}"; slog="${slog%%:*}"; name="${m##*:}"  # plog: production user ID
     mail=$(wprod user get "$plog" --field=user_email 2>/dev/null) || { echo "$plog: not found on production, skipped"; continue; }
     if w user get "$slog" --field=ID >/dev/null 2>&1; then echo "$slog: already exists, not changed"; continue; fi
     w user create "$slog" "$mail" --role=editor --display_name="$name" --send-email --porcelain | sed "s/^/$slog created, ID /"
