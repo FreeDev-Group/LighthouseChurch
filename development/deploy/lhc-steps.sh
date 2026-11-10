@@ -290,13 +290,15 @@ restore-full)
   echo "backup $B"; (cd "$B" && sha256sum -c SHA256SUMS) || exit 1
   TS=$(date -u +%Y%m%d-%H%M%S)
   echo "-- simulated incident"
-  marker=$(w post create --post_type=page --post_status=publish --post_title='Marqueur test de restauration' --post_name=lhc-restore-marker --porcelain)
-  gal=$(page_id galerie); w post delete "$gal" --force
+  marker=$(page_id lhc-restore-marker)
+  [ -n "$marker" ] || marker=$(w post create --post_type=page --post_status=publish --post_title='Marqueur test de restauration' --post_name=lhc-restore-marker --porcelain)
+  gal=$(page_id galerie); [ -z "$gal" ] || w post delete "$gal" --force
   echo marker > "$WP/wp-content/lhc-restore-marker.txt"
   echo "marker page $marker, galerie deleted ($gal): /galerie/ $(http a /galerie/) /lhc-restore-marker/ $(http a /lhc-restore-marker/)"
   start=$(date +%s)
   echo "-- restore database"
-  cnf=$(db_cnf); zcat "$B/db.sql.gz" | mysql --defaults-extra-file="$cnf"; echo "import exit $?"; rm -f "$cnf"
+  cnf=$(db_cnf); zcat "$B/db.sql.gz" | mysql --defaults-extra-file="$cnf" "$(w config get DB_NAME)"; rc=$?; rm -f "$cnf"
+  echo "import exit $rc"; [ $rc -eq 0 ] || { echo "RESTORE TEST FAILED: database import failed, files not touched"; exit 1; }
   echo "-- restore files"
   mv "$WP" "$WP.pre-restore-$TS" && mkdir "$WP" && chmod 755 "$WP"
   tar xpzf "$B/files.tar.gz" -C "$(dirname "$WP")"; echo "extract exit $?"
@@ -309,7 +311,7 @@ restore-full)
   check_site
   echo "/lhc-restore-marker/ $(http a /lhc-restore-marker/) (404 expected)"
   if [ "$(http a /galerie/)" = 200 ] && [ "$(http a /)" = 200 ] && [ "$(page_id lhc-restore-marker)" = "" ]; then
-    rm -rf "$WP.pre-restore-$TS"; echo "RESTORE TEST OK: previous folder removed"
+    for d in "$WP".pre-restore-*; do [ -d "$d" ] && rm -rf "$d" && echo "removed $d"; done; echo "RESTORE TEST OK"
   else
     echo "RESTORE TEST FAILED: previous files kept in $WP.pre-restore-$TS"; exit 1
   fi
